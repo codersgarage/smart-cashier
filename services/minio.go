@@ -1,9 +1,9 @@
 package services
 
 import (
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/config"
 	"github.com/minio/minio-go"
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/config"
 	"io"
 )
 

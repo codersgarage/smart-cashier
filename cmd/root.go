@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/config"
-	"github.com/shopicano/shopicano-backend/log"
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/config"
+	"github.com/codersgarage/smart-cashier/log"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -12,7 +12,7 @@ import (
 var (
 	// RootCmd is the root command of nur service
 	RootCmd = &cobra.Command{
-		Use:   "shopicano",
+		Use:   "smart-cashier",
 		Short: "A http service",
 		Long:  `A HTTP JSON API backend service`,
 	}

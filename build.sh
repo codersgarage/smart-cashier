@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export CONSUL_URL="128.199.89.247:8500"
-export CONSUL_PATH="shopicano"
+export CONSUL_URL="localhost:8500"
+export CONSUL_PATH="smart-cashier"
 
 export GO111MODULE=on
 export GOARCH="amd64"
@@ -9,7 +9,7 @@ export CGO_ENABLED=0
 
 cmd=$1
 
-binary="shopicano"
+binary="smart-cashier"
 
 if [ "$cmd" = "build" ]; then
   echo "Executing build command"
@@ -28,12 +28,6 @@ fi
 if [ "$cmd" = "auto" ]; then
   echo "Executing migration auto command"
   ./${binary} migration auto
-  exit
-fi
-
-if [ "$cmd" = "init" ]; then
-  echo "Executing migration init command"
-  ./${binary} migration init
   exit
 fi
 

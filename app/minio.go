@@ -1,8 +1,8 @@
 package app
 
 import (
+	"github.com/codersgarage/smart-cashier/config"
 	"github.com/minio/minio-go"
-	"github.com/shopicano/shopicano-backend/config"
 )
 
 var spaceClient *minio.Client

@@ -2,9 +2,9 @@ package core
 
 import (
 	"fmt"
+	"github.com/codersgarage/smart-cashier/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/minio/minio-go"
-	"github.com/shopicano/shopicano-backend/errors"
 	"io"
 )
 

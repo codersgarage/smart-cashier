@@ -1,14 +1,14 @@
 package api
 
 import (
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/core"
+	"github.com/codersgarage/smart-cashier/data"
+	"github.com/codersgarage/smart-cashier/errors"
+	"github.com/codersgarage/smart-cashier/log"
+	"github.com/codersgarage/smart-cashier/middlewares"
+	"github.com/codersgarage/smart-cashier/utils"
 	"github.com/labstack/echo/v4"
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/core"
-	"github.com/shopicano/shopicano-backend/data"
-	"github.com/shopicano/shopicano-backend/errors"
-	"github.com/shopicano/shopicano-backend/log"
-	"github.com/shopicano/shopicano-backend/middlewares"
-	"github.com/shopicano/shopicano-backend/utils"
 	"net/http"
 )
 
@@ -18,9 +18,6 @@ func RegisterUserRoutes(g *echo.Group) {
 		g.PUT("/", update)
 		g.GET("/", get)
 	}(*g)
-
-	//g.PATCH("/:id/status/", r.updateStatus)
-	//g.PATCH("/:id/permission/", r.updatePermission)
 }
 
 func update(ctx echo.Context) error {
@@ -54,7 +51,6 @@ func get(ctx echo.Context) error {
 		"status":     u.Status,
 		"created_at": u.CreatedAt,
 		"updated_at": u.UpdatedAt,
-		"permission": ctx.Get(utils.UserPermission),
 	}
 	resp.Status = http.StatusOK
 	return resp.ServerJSON(ctx)

@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/codersgarage/smart-cashier/api"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/shopicano/shopicano-backend/api"
 	"net/http"
 )
 
@@ -32,32 +32,17 @@ func getRouter() http.Handler {
 func registerV1Routes() {
 	v1 := router.Group("/v1")
 
-	adminGroup := v1.Group("/admin")
 	userGroup := v1.Group("/users")
-
-	storeGroup := v1.Group("/stores")
-	categoryGroup := v1.Group("/categories")
-	collectionGroup := v1.Group("/collections")
-	productGroup := v1.Group("/products")
-	addressesGroup := v1.Group("/addresses")
-	ordersGroup := v1.Group("/orders")
-	paymentGroup := v1.Group("/payments")
-	customersGroup := v1.Group("/customers")
-	statsGroup := v1.Group("/stats")
+	diaryGroup := v1.Group("/diaries")
+	diaryEntryCategoriesGroup := diaryGroup.Group("/diaries/:diary_id/categories")
+	diaryEntriesGroup := diaryGroup.Group("/diaries/:diary_id/entries")
 
 	fsGroup := v1.Group("/fs")
 
 	api.RegisterLegacyRoutes(v1)
-	api.RegisterAdminRoutes(adminGroup)
 	api.RegisterUserRoutes(userGroup)
-	api.RegisterStoreRoutes(storeGroup)
-	api.RegisterProductRoutes(productGroup)
-	api.RegisterCategoryRoutes(categoryGroup)
-	api.RegisterCollectionRoutes(collectionGroup)
 	api.RegisterFSRoutes(fsGroup)
-	api.RegisterAddressRoutes(addressesGroup)
-	api.RegisterOrderRoutes(ordersGroup)
-	api.RegisterPaymentRoutes(paymentGroup)
-	api.RegisterCustomerRoutes(customersGroup)
-	api.RegisterStatsRoutes(statsGroup)
+	api.RegisterDiaryRoutes(diaryGroup)
+	api.RegisterDiaryEntryRoutes(diaryEntriesGroup)
+	api.RegisterDiaryEntryCategoryRoutes(diaryEntryCategoriesGroup)
 }

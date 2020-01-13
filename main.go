@@ -1,6 +1,6 @@
 package main
 
-import "github.com/shopicano/shopicano-backend/cmd"
+import "github.com/codersgarage/smart-cashier/cmd"
 
 func main() {
 	cmd.Execute()

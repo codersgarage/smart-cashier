@@ -2,10 +2,10 @@ package app
 
 import (
 	"fmt"
+	"github.com/codersgarage/smart-cashier/config"
+	"github.com/codersgarage/smart-cashier/log"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/shopicano/shopicano-backend/config"
-	"github.com/shopicano/shopicano-backend/log"
 )
 
 var instance *gorm.DB

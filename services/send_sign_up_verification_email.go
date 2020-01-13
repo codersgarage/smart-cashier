@@ -2,8 +2,8 @@ package services
 
 import (
 	"fmt"
+	"github.com/codersgarage/smart-cashier/config"
 	"github.com/go-gomail/gomail"
-	"github.com/shopicano/shopicano-backend/config"
 )
 
 func SendSignUpVerificationEmail(name, email, userID, verificationToken string) error {

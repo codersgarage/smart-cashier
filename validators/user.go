@@ -2,12 +2,8 @@ package validators
 
 import (
 	"github.com/asaskevich/govalidator"
+	"github.com/codersgarage/smart-cashier/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/shopicano/shopicano-backend/errors"
-	"github.com/shopicano/shopicano-backend/models"
-	"github.com/shopicano/shopicano-backend/utils"
-	"github.com/shopicano/shopicano-backend/values"
-	"time"
 )
 
 func ValidateLogin(ctx echo.Context) (string, string, error) {
@@ -34,33 +30,23 @@ func ValidateLogin(ctx echo.Context) (string, string, error) {
 	return "", "", &ve
 }
 
-func ValidateRegister(ctx echo.Context) (*models.User, error) {
-	ur := struct {
-		Name           string  `json:"name" valid:"required,stringlength(3|100)"`
-		Email          string  `json:"email" valid:"required,email"`
-		ProfilePicture *string `json:"profile_picture"`
-		Phone          *string `json:"phone"`
-		Password       string  `json:"password" valid:"required,stringlength(8|100)"`
-	}{}
+type ReqRegister struct {
+	Name           string  `json:"name" valid:"required,stringlength(3|100)"`
+	Email          string  `json:"email" valid:"required,email"`
+	ProfilePicture *string `json:"profile_picture"`
+	Password       string  `json:"password" valid:"required,stringlength(8|100)"`
+}
 
-	if err := ctx.Bind(&ur); err != nil {
+func ValidateRegister(ctx echo.Context) (*ReqRegister, error) {
+	pld := ReqRegister{}
+
+	if err := ctx.Bind(&pld); err != nil {
 		return nil, err
 	}
 
-	ok, err := govalidator.ValidateStruct(&ur)
+	ok, err := govalidator.ValidateStruct(&pld)
 	if ok {
-		return &models.User{
-			ID:             utils.NewUUID(),
-			Name:           ur.Name,
-			Email:          ur.Email,
-			Password:       ur.Password,
-			Phone:          ur.Phone,
-			ProfilePicture: ur.ProfilePicture,
-			Status:         models.UserRegistered,
-			PermissionID:   values.UserGroupID,
-			CreatedAt:      time.Now().UTC(),
-			UpdatedAt:      time.Now().UTC(),
-		}, nil
+		return &pld, nil
 	}
 
 	ve := errors.ValidationError{}

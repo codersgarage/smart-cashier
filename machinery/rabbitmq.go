@@ -3,9 +3,9 @@ package machinery
 import (
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
-	cfg "github.com/shopicano/shopicano-backend/config"
-	"github.com/shopicano/shopicano-backend/log"
-	"github.com/shopicano/shopicano-backend/tasks"
+	cfg "github.com/codersgarage/smart-cashier/config"
+	"github.com/codersgarage/smart-cashier/log"
+	"github.com/codersgarage/smart-cashier/tasks"
 	"os"
 )
 

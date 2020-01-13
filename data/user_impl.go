@@ -1,10 +1,9 @@
 package data
 
 import (
-	"fmt"
+	"github.com/codersgarage/smart-cashier/models"
+	"github.com/codersgarage/smart-cashier/utils"
 	"github.com/jinzhu/gorm"
-	"github.com/shopicano/shopicano-backend/models"
-	"github.com/shopicano/shopicano-backend/utils"
 	"time"
 )
 
@@ -30,7 +29,7 @@ func (uu *UserRepositoryImpl) Register(db *gorm.DB, u *models.User) error {
 func (uu *UserRepositoryImpl) Login(db *gorm.DB, email, password string) (*models.Session, error) {
 	u := models.User{}
 
-	if err := db.Model(&u).Where("email = ? AND status = ?", email, models.UserActive).First(&u).Error; err != nil {
+	if err := db.Table(u.TableName()).Where("email = ? AND status = ?", email, models.UserActive).Find(&u).Error; err != nil {
 		return nil, err
 	}
 
@@ -101,55 +100,14 @@ func (uu *UserRepositoryImpl) Update(db *gorm.DB, u *models.User) error {
 		Updates(map[string]interface{}{
 			"name":               u.Name,
 			"profile_picture":    u.ProfilePicture,
-			"phone":              u.Phone,
 			"password":           u.Password,
 			"verification_token": u.VerificationToken,
-			"is_email_verified":  u.IsEmailVerified,
 			"status":             u.Status,
-			"permission_id":      u.PermissionID,
 			"updated_at":         u.UpdatedAt,
 		}).Error; err != nil {
 		return err
 	}
 	return nil
-}
-
-func (uu *UserRepositoryImpl) GetPermission(db *gorm.DB, token string) (string, *models.Permission, error) {
-	s := models.Session{}
-	u := models.User{}
-	up := models.UserPermission{}
-
-	result := struct {
-		ID         string             `json:"id"`
-		Permission *models.Permission `json:"permission"`
-	}{}
-
-	if err := db.Table(fmt.Sprintf("%s AS s", s.TableName())).
-		Select("u.id, up.permission").
-		Joins(fmt.Sprintf("JOIN %s AS u ON u.id = s.user_id", u.TableName())).
-		Joins(fmt.Sprintf("JOIN %s AS up ON u.permission_id = up.id", up.TableName())).
-		Where("s.access_token = ? AND u.status = ?", token, models.UserActive).Scan(&result).Error; err != nil {
-		return "", nil, err
-	}
-	return result.ID, result.Permission, nil
-}
-
-func (uu *UserRepositoryImpl) GetPermissionByUserID(db *gorm.DB, userID string) (string, *models.Permission, error) {
-	u := models.User{}
-	up := models.UserPermission{}
-
-	result := struct {
-		ID         string             `json:"id"`
-		Permission *models.Permission `json:"permission"`
-	}{}
-
-	if err := db.Table(fmt.Sprintf("%s AS u", u.TableName())).
-		Select("u.id, up.permission").
-		Joins(fmt.Sprintf("JOIN %s AS up ON u.permission_id = up.id", up.TableName())).
-		Where("u.id = ? AND u.status = ?", userID, models.UserActive).Scan(&result).Error; err != nil {
-		return "", nil, err
-	}
-	return result.ID, result.Permission, nil
 }
 
 func (uu *UserRepositoryImpl) Get(db *gorm.DB, userID string) (*models.User, error) {
@@ -161,18 +119,11 @@ func (uu *UserRepositoryImpl) Get(db *gorm.DB, userID string) (*models.User, err
 	return &u, nil
 }
 
-func (uu *UserRepositoryImpl) IsSignUpEnabled(db *gorm.DB) (bool, error) {
-	s := models.Settings{}
-	if err := db.Model(&s).Where("id = ?", "1").First(&s).Error; err != nil {
-		return false, err
-	}
-	return s.IsSignUpEnabled, nil
-}
+func (uu *UserRepositoryImpl) GetSession(db *gorm.DB, token string) (*models.Session, error) {
+	s := models.Session{}
 
-func (uu *UserRepositoryImpl) IsStoreCreationEnabled(db *gorm.DB) (bool, error) {
-	s := models.Settings{}
-	if err := db.Model(&s).Where("id = ?", "1").First(&s).Error; err != nil {
-		return false, err
+	if err := db.Table(s.TableName()).Where("access_token = ?", token).First(&s).Error; err != nil {
+		return nil, err
 	}
-	return s.IsStoreCreationEnabled, nil
+	return &s, nil
 }

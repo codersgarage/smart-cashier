@@ -9,8 +9,8 @@ ENV GOOS="linux"
 ENV GOARCH="amd64"
 ENV GO111MODULE=on
 
-COPY . $GOPATH/src/github.com/shopicano/shopicano-backend
-WORKDIR $GOPATH/src/github.com/shopicano/shopicano-backend
+COPY . $GOPATH/src/github.com/codersgarage/smart-cashier
+WORKDIR $GOPATH/src/github.com/codersgarage/smart-cashier
 
 RUN go get github.com/ugorji/go@v1.1.2-0.20180831062425-e253f1f20942
 

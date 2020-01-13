@@ -2,11 +2,11 @@ package tasks
 
 import (
 	"github.com/RichardKnop/machinery/v1/tasks"
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/data"
-	"github.com/shopicano/shopicano-backend/log"
-	"github.com/shopicano/shopicano-backend/services"
-	"github.com/shopicano/shopicano-backend/utils"
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/data"
+	"github.com/codersgarage/smart-cashier/log"
+	"github.com/codersgarage/smart-cashier/services"
+	"github.com/codersgarage/smart-cashier/utils"
 	"time"
 )
 

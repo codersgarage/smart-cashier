@@ -18,40 +18,22 @@ minio:
   serve_url: "http://0.0.0.0:9000"
   key: "MINIO_ACCESS_KEY"
   secret: "MINIO_SECRET_KEY"
-  bucket: "shopicano"
+  bucket: "smart-cashier"
   location: "us"
   sign_duration: 5
 
 rabbitmq:
   broker: "amqp://guest:guest@0.0.0.0:5672/"
-  default_queue: "shopicano_tasks"
+  default_queue: "smart_cashier_tasks"
   result_backend: "amqp://guest:guest@0.0.0.0:5672/"
   amqp:
-    exchange: "shopicano_exchange"
+    exchange: "smart_cashier_exchange"
     exchange_type: "direct"
-    binding_key: "shopicano_tasks"
+    binding_key: "smart_cashier_tasks"
     prefetch_count: 5
   worker:
     name: "worker-1"
     count: 5
-
-#payment_gateway:
-#  name: "stripe"
-#  configs:
-#    secret_key: "sk_test_4NbdmxYcZ8rvd5uaeahwianbA"
-#    public_key: "pk_test_EBmqabVLFZiauwnan1kaiakEulkz"
-#    success_callback: "https://414b062211.ngrok.io/v1/orders/%s/pay"
-#    failure_callback: "https://414b09911.ngrok.io/v1/orders/%s/pay"
-
-payment_gateway:
-  name: "brainTree"
-  configs:
-    token: "sandbox_mf8nfbgp_7jqb4j4oe78ahahbahhabeqj"
-    public_key: "2k6v48t96p9anaqkanbfukak"
-    private_key: "00eb8c46af1fpoqjba9873ma425074c4a6624"
-    merchant_id: "mb7ffspvgb98anh"
-    success_callback: "https://414b31121.ngrok.io/v1/orders/%s/pay"
-    failure_callback: "https://4111221.ngrok.io/v1/orders/%s/pay"
 
 email_service:
   smtp_host: "example.example.com"

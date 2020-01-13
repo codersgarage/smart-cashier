@@ -42,7 +42,6 @@ func LoadConfig() error {
 	LoadApp()
 	LoadDB()
 	LoadMinio()
-	LoadPaymentGateway()
 	LoadRabbitMQ()
 	LoadEmailService()
 

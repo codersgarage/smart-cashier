@@ -1,10 +1,10 @@
 package migration
 
 import (
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/core"
-	"github.com/shopicano/shopicano-backend/log"
-	"github.com/shopicano/shopicano-backend/models"
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/core"
+	"github.com/codersgarage/smart-cashier/log"
+	"github.com/codersgarage/smart-cashier/models"
 	"github.com/spf13/cobra"
 )
 
@@ -18,12 +18,8 @@ func drop(cmd *cobra.Command, args []string) {
 	tx := app.DB().Begin()
 
 	var tables []core.Table
-	tables = append(tables, &models.AdditionalChargeOfProduct{}, &models.AdditionalCharge{})
-	tables = append(tables, &models.OrderedItem{}, &models.Order{})
-	tables = append(tables, &models.ProductOfCollection{}, &models.Product{}, &models.Category{}, &models.Collection{})
-	tables = append(tables, &models.ShippingMethod{}, &models.PaymentMethod{}, &models.Settings{})
-	tables = append(tables, &models.Staff{}, &models.StorePermission{}, &models.Store{})
-	tables = append(tables, &models.Address{}, &models.Session{}, &models.User{}, &models.UserPermission{})
+	tables = append(tables, &models.Entry{}, &models.Category{})
+	tables = append(tables, &models.Diary{}, &models.Session{}, &models.User{})
 
 	for _, t := range tables {
 		if err := tx.DropTableIfExists(t).Error; err != nil {

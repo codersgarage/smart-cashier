@@ -1,20 +1,15 @@
 package utils
 
 import (
+	"github.com/codersgarage/smart-cashier/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/shopicano/shopicano-backend/errors"
-	"github.com/shopicano/shopicano-backend/models"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
 )
 
 const (
-	PasswordCost = 11
-
-	StoreID         = "store_id"
-	StorePermission = "store_permission"
-	UserID          = "user_id"
-	UserPermission  = "user_permission"
+	PasswordCost = 7
+	UserID       = "user_id"
 )
 
 func GeneratePassword(password string) (string, error) {
@@ -34,15 +29,6 @@ func ParseBearerToken(ctx echo.Context) (string, error) {
 		return "", errors.NewError("Bearer token not found")
 	}
 	return bearerWithToken[1], nil
-}
-
-func IsStoreStaff(ctx echo.Context) bool {
-	perm := ctx.Get(StorePermission)
-	return ctx.Get(StoreID) != nil && perm != nil && (perm.(models.Permission) == models.ManagerPerm || perm.(models.Permission) == models.AdminPerm)
-}
-
-func GetStoreID(ctx echo.Context) string {
-	return ctx.Get(StoreID).(string)
 }
 
 func GetUserID(ctx echo.Context) string {

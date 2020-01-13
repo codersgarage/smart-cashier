@@ -17,6 +17,7 @@ type User struct {
 	Name              string     `json:"name" gorm:"column:name;not null"`
 	Email             string     `json:"email" gorm:"column:email;unique;not null"`
 	Password          string     `json:"-" gorm:"column:password;not null"`
+	ProfilePicture    *string    `json:"profile_picture" gorm:"column:profile_picture"`
 	VerificationToken *string    `json:"-" gorm:"column:verification_token;unique"`
 	Status            UserStatus `json:"status" gorm:"column:status;index;not null"`
 	CreatedAt         time.Time  `json:"created_at" gorm:"column:created_at;index"`

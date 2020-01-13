@@ -2,8 +2,8 @@ package queue
 
 import (
 	"github.com/RichardKnop/machinery/v1/tasks"
-	"github.com/shopicano/shopicano-backend/machinery"
-	tasks2 "github.com/shopicano/shopicano-backend/tasks"
+	"github.com/codersgarage/smart-cashier/machinery"
+	tasks2 "github.com/codersgarage/smart-cashier/tasks"
 )
 
 func SendSignUpVerificationEmail(userID string) error {

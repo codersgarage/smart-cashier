@@ -1,18 +1,16 @@
 package api
 
 import (
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/core"
+	"github.com/codersgarage/smart-cashier/data"
+	"github.com/codersgarage/smart-cashier/errors"
+	"github.com/codersgarage/smart-cashier/log"
+	"github.com/codersgarage/smart-cashier/models"
+	"github.com/codersgarage/smart-cashier/queue"
+	"github.com/codersgarage/smart-cashier/utils"
+	"github.com/codersgarage/smart-cashier/validators"
 	"github.com/labstack/echo/v4"
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/core"
-	"github.com/shopicano/shopicano-backend/data"
-	"github.com/shopicano/shopicano-backend/errors"
-	"github.com/shopicano/shopicano-backend/log"
-	"github.com/shopicano/shopicano-backend/middlewares"
-	"github.com/shopicano/shopicano-backend/models"
-	"github.com/shopicano/shopicano-backend/queue"
-	"github.com/shopicano/shopicano-backend/utils"
-	"github.com/shopicano/shopicano-backend/validators"
-	"github.com/shopicano/shopicano-backend/values"
 	"net/http"
 )
 
@@ -21,11 +19,7 @@ func RegisterLegacyRoutes(g *echo.Group) {
 	g.GET("/logout/", logout)
 	g.GET("/refresh-token/", refreshToken)
 	g.GET("/email-verification/", emailVerification)
-
-	func(g echo.Group) {
-		g.Use(middlewares.IsSignUpEnabled)
-		g.POST("/register/", register)
-	}(*g)
+	g.POST("/register/", register)
 }
 
 func login(ctx echo.Context) error {
@@ -65,22 +59,10 @@ func login(ctx echo.Context) error {
 		return resp.ServerJSON(ctx)
 	}
 
-	_, permission, err := uc.GetPermissionByUserID(db, s.UserID)
-	if err != nil {
-		log.Log().Errorln(err)
-
-		resp.Title = "Database query failed"
-		resp.Status = http.StatusInternalServerError
-		resp.Code = errors.DatabaseQueryFailed
-		resp.Errors = err
-		return resp.ServerJSON(ctx)
-	}
-
 	resp.Data = map[string]interface{}{
 		"access_token":  s.AccessToken,
 		"refresh_token": s.RefreshToken,
 		"expire_on":     s.ExpireOn,
-		"permission":    permission,
 	}
 
 	resp.Status = http.StatusOK
@@ -165,7 +147,7 @@ func refreshToken(ctx echo.Context) error {
 }
 
 func register(ctx echo.Context) error {
-	u, err := validators.ValidateRegister(ctx)
+	pld, err := validators.ValidateRegister(ctx)
 
 	resp := core.Response{}
 
@@ -181,10 +163,20 @@ func register(ctx echo.Context) error {
 
 	uc := data.NewUserRepository()
 
-	u.Password, _ = utils.GeneratePassword(u.Password)
-	u.PermissionID = values.UserGroupID
+	u := models.User{
+		ID:     utils.NewUUID(),
+		Name:   pld.Name,
+		Status: models.UserRegistered,
+		Email:  pld.Email,
+	}
 
-	if err := uc.Register(db, u); err != nil {
+	if pld.ProfilePicture != nil {
+		u.ProfilePicture = pld.ProfilePicture
+	}
+
+	u.Password, _ = utils.GeneratePassword(pld.Password)
+
+	if err := uc.Register(db, &u); err != nil {
 		msg, ok := errors.IsDuplicateKeyError(err)
 		if ok {
 			resp.Title = "User already register"
@@ -260,15 +252,8 @@ func emailVerification(ctx echo.Context) error {
 		return resp.ServerJSON(ctx)
 	}
 
-	if u.IsEmailVerified {
-		resp.Title = "Email already verified"
-		resp.Status = http.StatusOK
-		return resp.ServerJSON(ctx)
-	}
-
 	u.VerificationToken = nil
 	u.Status = models.UserActive
-	u.IsEmailVerified = true
 	if err := uc.Update(db, u); err != nil {
 		resp.Title = "Email verification failed"
 		resp.Status = http.StatusInternalServerError

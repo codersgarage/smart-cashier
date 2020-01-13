@@ -1,10 +1,10 @@
 package migration
 
 import (
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/core"
-	"github.com/shopicano/shopicano-backend/log"
-	"github.com/shopicano/shopicano-backend/models"
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/core"
+	"github.com/codersgarage/smart-cashier/log"
+	"github.com/codersgarage/smart-cashier/models"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -19,13 +19,8 @@ func auto(cmd *cobra.Command, args []string) {
 	tx := app.DB().Begin()
 
 	var tables []core.Table
-	tables = append(tables, &models.Address{})
-	tables = append(tables, &models.UserPermission{}, &models.User{}, &models.Session{})
-	tables = append(tables, &models.StorePermission{}, &models.Store{}, &models.Staff{})
-	tables = append(tables, &models.ShippingMethod{}, &models.PaymentMethod{}, &models.Settings{})
-	tables = append(tables, &models.Category{}, &models.Collection{}, &models.Product{}, &models.ProductOfCollection{})
-	tables = append(tables, &models.Order{}, &models.OrderedItem{})
-	tables = append(tables, &models.AdditionalCharge{}, &models.AdditionalChargeOfProduct{})
+	tables = append(tables, &models.User{}, &models.Session{})
+	tables = append(tables, &models.Diary{}, &models.Entry{}, &models.Category{})
 
 	for _, t := range tables {
 		if err := tx.AutoMigrate(t).Error; err != nil {
@@ -36,11 +31,7 @@ func auto(cmd *cobra.Command, args []string) {
 	}
 
 	var tForeignKeys []core.Model
-	tForeignKeys = append(tForeignKeys, &models.Address{}, &models.Category{}, &models.Collection{})
-	tForeignKeys = append(tForeignKeys, &models.Order{}, &models.OrderedItem{})
-	tForeignKeys = append(tForeignKeys, &models.Product{}, &models.ProductOfCollection{})
-	tForeignKeys = append(tForeignKeys, &models.Settings{}, &models.Store{}, &models.Staff{})
-	tForeignKeys = append(tForeignKeys, &models.User{}, &models.Session{})
+	tForeignKeys = append(tForeignKeys, &models.Session{}, &models.Diary{}, &models.Entry{}, &models.Category{})
 
 	for _, t := range tForeignKeys {
 		for _, fks := range t.ForeignKeys() {
@@ -54,9 +45,7 @@ func auto(cmd *cobra.Command, args []string) {
 	}
 
 	var views []core.View
-	views = append(views, &models.StoreUserProfile{})
-	views = append(views, &models.OrderDetailsView{})
-	views = append(views, &models.OrderedItemView{})
+	//views = append(views, &models.StoreUserProfile{})
 
 	for _, v := range views {
 		if err := v.CreateView(tx); err != nil {

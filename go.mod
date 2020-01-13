@@ -1,4 +1,4 @@
-module github.com/shopicano/shopicano-backend
+module github.com/codersgarage/smart-cashier
 
 go 1.12
 

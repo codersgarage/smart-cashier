@@ -1,11 +1,11 @@
 package middlewares
 
 import (
+	"github.com/codersgarage/smart-cashier/app"
+	"github.com/codersgarage/smart-cashier/core"
+	"github.com/codersgarage/smart-cashier/data"
+	"github.com/codersgarage/smart-cashier/utils"
 	"github.com/labstack/echo/v4"
-	"github.com/shopicano/shopicano-backend/app"
-	"github.com/shopicano/shopicano-backend/core"
-	"github.com/shopicano/shopicano-backend/data"
-	"github.com/shopicano/shopicano-backend/utils"
 	"net/http"
 )
 
@@ -23,15 +23,14 @@ var AuthUser = func(next echo.HandlerFunc) echo.HandlerFunc {
 		db := app.DB()
 
 		uc := data.NewUserRepository()
-		userID, userPermission, err := uc.GetPermission(db, token)
+		session, err := uc.GetSession(db, token)
 		if err != nil {
 			resp.Status = http.StatusUnauthorized
 			resp.Title = "Unauthorized request"
 			return resp.ServerJSON(ctx)
 		}
 
-		ctx.Set(utils.UserID, userID)
-		ctx.Set(utils.UserPermission, userPermission)
+		ctx.Set(utils.UserID, session.UserID)
 		return next(ctx)
 	}
 }

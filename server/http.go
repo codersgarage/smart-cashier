@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/shopicano/shopicano-backend/config"
-	"github.com/shopicano/shopicano-backend/log"
+	"github.com/codersgarage/smart-cashier/config"
+	"github.com/codersgarage/smart-cashier/log"
 	"net/http"
 	"os"
 	"os/signal"

@@ -1,7 +1,7 @@
 package log
 
 import (
-	"github.com/shopicano/shopicano-backend/log/hooks"
+	"github.com/codersgarage/smart-cashier/log/hooks"
 	"github.com/sirupsen/logrus"
 	"os"
 )
