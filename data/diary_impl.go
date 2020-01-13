@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	"github.com/codersgarage/smart-cashier/models"
 	"github.com/jinzhu/gorm"
 )
@@ -82,22 +83,30 @@ func (dr *DiaryRepositoryImpl) UpdateDiary(db *gorm.DB, d *models.Diary) error {
 	return nil
 }
 
-//func (dr *DiaryRepositoryImpl) CreateEntry(db *gorm.DB, e *models.Entry) error {
-//	return db.Table(e.TableName()).Create(e).Error
-//}
-//
-//func (dr *DiaryRepositoryImpl) ListEntries(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.Entry, error) {
-//	var entries []models.Entry
-//	e := models.Entry{}
-//	if err := db.Table(e.TableName()).
-//		Where("diary_id = ?", userID, diaryID).
-//		Limit(limit).
-//		Offset(from).
-//		Find(&entries).Error; err != nil {
-//		return nil, err
-//	}
-//	return entries, nil
-//}
+func (dr *DiaryRepositoryImpl) CreateEntry(db *gorm.DB, e *models.Entry) error {
+	return db.Table(e.TableName()).Create(e).Error
+}
+
+func (dr *DiaryRepositoryImpl) ListEntries(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.EntryDetails, error) {
+	var entries []models.EntryDetails
+	e := models.Entry{}
+	d := models.Diary{}
+	c := models.Category{}
+	if err := db.Table(fmt.Sprintf("%s AS e", e.TableName())).
+		Select("e.id AS id, e.amount AS amount, e.note AS note, e.created_at AS created_at, e.updated_at AS updated_at,"+
+			" d.id AS diary_id, d.name AS diary_name, d.user_id AS user_id, c.id AS category_id, c.name AS category_name").
+		Joins(fmt.Sprintf("LEFT JOIN %s AS d ON e.diary_id = d.id", d.TableName())).
+		Joins(fmt.Sprintf("LEFT JOIN %s AS c ON e.category_id = c.id", c.TableName())).
+		Where("d.user_id = ? AND e.diary_id = ?", userID, diaryID).
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(from).
+		Find(&entries).Error; err != nil {
+		return nil, err
+	}
+	return entries, nil
+}
+
 //
 //func (dr *DiaryRepositoryImpl) SearchEntries(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Entry, error) {
 //	var entries []models.Entry
@@ -142,26 +151,70 @@ func (dr *DiaryRepositoryImpl) UpdateDiary(db *gorm.DB, d *models.Diary) error {
 //	return &e, nil
 //}
 //
-//func (dr *DiaryRepositoryImpl) CreateEntryCategory(db *gorm.DB, ec *models.Category) error {
-//
-//}
-//
-//func (dr *DiaryRepositoryImpl) ListEntryCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.Category, error) {
-//
-//}
-//
-//func (dr *DiaryRepositoryImpl) SearchEntryCategories(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Category, error) {
-//
-//}
-//
-//func (dr *DiaryRepositoryImpl) DeleteEntryCategory(db *gorm.DB, userID, diaryID, entryCategoryID string) error {
-//
-//}
-//
-//func (dr *DiaryRepositoryImpl) GetEntryCategory(db *gorm.DB, userID, diaryID, entryCategoryID string) (*models.Category, error) {
-//
-//}
-//
-//func (dr *DiaryRepositoryImpl) UpdateEntryCategory(db *gorm.DB, ec *models.Category) error {
-//
-//}
+func (dr *DiaryRepositoryImpl) CreateCategory(db *gorm.DB, c *models.Category) error {
+	return db.Table(c.TableName()).Create(c).Error
+}
+
+func (dr *DiaryRepositoryImpl) ListCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.Category, error) {
+	var categories []models.Category
+	c := models.Category{}
+	d := models.Diary{}
+	if err := db.Table(fmt.Sprintf("%s AS c", c.TableName())).
+		Select("c.id AS id, d.id AS diary_id, d.user_id AS user_id, c.name AS name, c.created_at AS created_at, c.updated_at AS updated_at").
+		Joins(fmt.Sprintf("JOIN %s AS d ON c.diary_id = d.id", d.TableName())).
+		Where("user_id = ? AND diary_id = ?", userID, diaryID).
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(from).
+		Find(&categories).Error; err != nil {
+		return nil, err
+	}
+	return categories, nil
+}
+
+func (dr *DiaryRepositoryImpl) SearchCategories(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Category, error) {
+	var categories []models.Category
+	c := models.Category{}
+	if err := db.Table(c.TableName()).
+		Where("user_id = ? AND id = ? AND name LIKE ?", userID, diaryID, "%"+query+"%").
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(from).
+		Find(&categories).Error; err != nil {
+		return nil, err
+	}
+	return categories, nil
+}
+
+func (dr *DiaryRepositoryImpl) DeleteCategory(db *gorm.DB, userID, diaryID, categoryID string) error {
+	c := models.Category{}
+	if err := db.Table(c.TableName()).
+		Where("user_id = ? AND id = ?", userID, diaryID).
+		Delete(&c).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (dr *DiaryRepositoryImpl) GetCategory(db *gorm.DB, userID, diaryID, categoryID string) (*models.Category, error) {
+	c := models.Category{}
+	if err := db.Table(c.TableName()).
+		Where("user_id = ? AND id = ?", userID, diaryID).
+		Find(&c).Error; err != nil {
+		return nil, err
+	}
+	return &c, nil
+}
+
+func (dr *DiaryRepositoryImpl) UpdateCategory(db *gorm.DB, c *models.Category) error {
+	if err := db.Table(c.TableName()).
+		Select("name").
+		Update(map[string]interface{}{
+			"name": c.Name,
+		}).
+		Where("id = ?", c.ID).
+		Find(&c).Error; err != nil {
+		return err
+	}
+	return nil
+}

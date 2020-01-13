@@ -7,8 +7,8 @@ import (
 )
 
 type ReqCreateEntry struct {
-	CategoryID *string `json:"category_id"`
-	Note       *string `json:"note"`
+	CategoryID string  `json:"category_id" valid:"required,stringlength(1|100)"`
+	Note       string  `json:"note" valid:"required,stringlength(1|100)"`
 	Amount     float64 `json:"amount" valid:"required,range(1|1000000000)"`
 }
 
@@ -19,7 +19,7 @@ func ValidateCreateEntry(ctx echo.Context) (*ReqCreateEntry, error) {
 		return nil, err
 	}
 
-	ok, err := govalidator.ValidateStruct(&pld)
+	ok, err := govalidator.ValidateStruct(pld)
 	if ok {
 		return pld, nil
 	}

@@ -14,6 +14,7 @@ const (
 	DiaryCreationDataInvalid          ErrorCode = "422005"
 	DiaryUpdateDataInvalid            ErrorCode = "422006"
 	CategoryCreationDataInvalid       ErrorCode = "422005"
+	EntryCreationDataInvalid          ErrorCode = "422005"
 	CollectionCreationDataInvalid     ErrorCode = "422006"
 	ShippingMethodCreationDataInvalid ErrorCode = "422007"
 	PaymentMethodCreationDataInvalid  ErrorCode = "422008"

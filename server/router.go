@@ -34,8 +34,8 @@ func registerV1Routes() {
 
 	userGroup := v1.Group("/users")
 	diaryGroup := v1.Group("/diaries")
-	diaryEntryCategoriesGroup := diaryGroup.Group("/diaries/:diary_id/categories")
-	diaryEntriesGroup := diaryGroup.Group("/diaries/:diary_id/entries")
+	diaryEntryCategoriesGroup := diaryGroup.Group("/:diary_id/categories")
+	diaryEntriesGroup := diaryGroup.Group("/:diary_id/entries")
 
 	fsGroup := v1.Group("/fs")
 
@@ -43,6 +43,6 @@ func registerV1Routes() {
 	api.RegisterUserRoutes(userGroup)
 	api.RegisterFSRoutes(fsGroup)
 	api.RegisterDiaryRoutes(diaryGroup)
-	api.RegisterDiaryEntryRoutes(diaryEntriesGroup)
-	api.RegisterDiaryEntryCategoryRoutes(diaryEntryCategoriesGroup)
+	api.RegisterEntryRoutes(diaryEntriesGroup)
+	api.RegisterCategoryRoutes(diaryEntryCategoriesGroup)
 }
