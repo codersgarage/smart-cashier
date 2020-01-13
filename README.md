@@ -1,2 +1,2 @@
-# Shopicano Backend
-Shopicano provides e-commerce platform to run your business smoothly.
+# Smart Cashier Backend
+Smart cashier is a money management application.
