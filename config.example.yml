@@ -37,5 +37,5 @@ email_service:
   smtp_port: 587
   smtp_username: admin
   smtp_password: andsifunasidunfaiun123iunad9ansdfnadsiasd
-  from_email_address: no-reply@shopicano.com
+  from_email_address: no-reply@example.com
   verification_url: 'http://localhost:9009'
