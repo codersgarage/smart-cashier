@@ -1,44 +1,41 @@
 app:
-  host: "0.0.0.0"
-  port: 9119
-  log_level: "debug"
-
+  host: 0.0.0.0
+  port: 9009
+  log_level: debug
 database:
-  host: "0.0.0.0"
+  host: localhost
   port: 5432
-  username: "test"
-  password: "test"
-  name: "test"
+  username: root
+  password: test
+  name: test
   max_idle_connections: 2
   max_active_connections: 10
   max_connection_lifetime: 2
-
 minio:
-  base_url: "0.0.0.0:9000"
-  serve_url: "http://0.0.0.0:9000"
-  key: "MINIO_ACCESS_KEY"
-  secret: "MINIO_SECRET_KEY"
-  bucket: "smart-cashier"
-  location: "us"
+  base_url: 'localhost:9000'
+  serve_url: 'http://localhost:9000'
+  key: MINIO_ACCESS_KEY
+  secret: MINIO_SECRET_KEY
+  bucket: shopicano
+  location: us
   sign_duration: 5
-
 rabbitmq:
-  broker: "amqp://guest:guest@0.0.0.0:5672/"
-  default_queue: "smart_cashier_tasks"
-  result_backend: "amqp://guest:guest@0.0.0.0:5672/"
+  broker: 'amqp://guest:guest@128.199.89.247:5672/'
+  default_queue: smart_cashier_tasks
+  result_backend: 'amqp://guest:guest@128.199.89.247:5672/'
   amqp:
-    exchange: "smart_cashier_exchange"
-    exchange_type: "direct"
-    binding_key: "smart_cashier_tasks"
+    exchange: smart_cashier_exchange
+    exchange_type: direct
+    binding_key: smart_cashier_tasks
     prefetch_count: 5
   worker:
-    name: "worker-1"
+    name: worker-1
     count: 5
 
 email_service:
-  smtp_host: "example.example.com"
+  smtp_host: smtp.example.net
   smtp_port: 587
-  smtp_username: "no-reply@example.com"
-  smtp_password: "password"
-  from_email_address: "no-reply@example.com"
-  verification_url: "https://414b11111.ngrok.io"
+  smtp_username: admin
+  smtp_password: andsifunasidunfaiun123iunad9ansdfnadsiasd
+  from_email_address: no-reply@shopicano.com
+  verification_url: 'http://localhost:9009'
