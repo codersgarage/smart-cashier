@@ -74,9 +74,10 @@ func (dr *DiaryRepositoryImpl) GetDiary(db *gorm.DB, userID, diaryID string) (*m
 func (dr *DiaryRepositoryImpl) UpdateDiary(db *gorm.DB, d *models.Diary) error {
 	if err := db.Table(d.TableName()).
 		Where("user_id = ? AND id = ?", d.UserID, d.ID).
-		Select("name").
+		Select("name, type").
 		Update(map[string]interface{}{
 			"name": d.Name,
+			"type": d.Type,
 		}).Error; err != nil {
 		return err
 	}
@@ -107,50 +108,45 @@ func (dr *DiaryRepositoryImpl) ListEntries(db *gorm.DB, userID, diaryID string, 
 	return entries, nil
 }
 
-//
-//func (dr *DiaryRepositoryImpl) SearchEntries(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Entry, error) {
-//	var entries []models.Entry
-//	e := models.Entry{}
-//	if err := db.Table(e.TableName()).
-//		Where("user_id = ? AND diary_id = ? AND name LIKE = ?", userID, diaryID, "%"+query+"%").
-//		Limit(limit).
-//		Offset(from).
-//		Find(&entries).Error; err != nil {
-//		return nil, err
-//	}
-//	return entries, nil
-//}
-//
-//func (dr *DiaryRepositoryImpl) DeleteEntry(db *gorm.DB, userID, diaryID, entryID string) error {
-//	e := models.Entry{}
-//	if err := db.Table(e.TableName()).
-//		Where("user_id = ? AND diary_id = ? AND id = ?", userID, diaryID, entryID).
-//		Delete(&e).Error; err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
-//func (dr *DiaryRepositoryImpl) GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.Entry, error) {
-//	e := models.Entry{}
-//	if err := db.Table(e.TableName()).
-//		Where("user_id = ? AND diary_id = ? AND id = ?", userID, diaryID, entryID).
-//		Find(&e).Error; err != nil {
-//		return nil, err
-//	}
-//	return &e, nil
-//}
-//
-//func (dr *DiaryRepositoryImpl) UpdateEntry(db *gorm.DB, e *models.Entry) error {
-//	e := models.Entry{}
-//	if err := db.Table(e.TableName()).
-//		Where("user_id = ? AND diary_id = ? AND id = ?", e.DiaryID, diaryID, entryID).
-//		Find(&e).Error; err != nil {
-//		return nil, err
-//	}
-//	return &e, nil
-//}
-//
+func (dr *DiaryRepositoryImpl) DeleteEntry(db *gorm.DB, diaryID, entryID string) error {
+	e := models.Entry{}
+	if err := db.Table(e.TableName()).
+		Where("diary_id = ? AND id = ?", diaryID, entryID).
+		Delete(&e).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (dr *DiaryRepositoryImpl) DeleteAllEntry(db *gorm.DB, diaryID string) error {
+	e := models.Entry{}
+	if err := db.Table(e.TableName()).
+		Where("diary_id = ?", diaryID).
+		Delete(&e).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (dr *DiaryRepositoryImpl) GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.Entry, error) {
+	e := models.Entry{}
+	if err := db.Table(e.TableName()).
+		Where("user_id = ? AND diary_id = ? AND id = ?", userID, diaryID, entryID).
+		Find(&e).Error; err != nil {
+		return nil, err
+	}
+	return &e, nil
+}
+
+func (dr *DiaryRepositoryImpl) UpdateEntry(db *gorm.DB, e *models.Entry) error {
+	if err := db.Table(e.TableName()).
+		Where("diary_id = ? AND id = ?", e.DiaryID, e.ID).
+		Find(&e).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (dr *DiaryRepositoryImpl) CreateCategory(db *gorm.DB, c *models.Category) error {
 	return db.Table(c.TableName()).Create(c).Error
 }
@@ -186,10 +182,20 @@ func (dr *DiaryRepositoryImpl) SearchCategories(db *gorm.DB, query, userID, diar
 	return categories, nil
 }
 
-func (dr *DiaryRepositoryImpl) DeleteCategory(db *gorm.DB, userID, diaryID, categoryID string) error {
+func (dr *DiaryRepositoryImpl) DeleteCategory(db *gorm.DB, diaryID, categoryID string) error {
 	c := models.Category{}
 	if err := db.Table(c.TableName()).
-		Where("user_id = ? AND id = ?", userID, diaryID).
+		Where("diary_id = ? AND id = ?", diaryID, categoryID).
+		Delete(&c).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (dr *DiaryRepositoryImpl) DeleteAllCategory(db *gorm.DB, diaryID string) error {
+	c := models.Category{}
+	if err := db.Table(c.TableName()).
+		Where("diary_id = ?", diaryID).
 		Delete(&c).Error; err != nil {
 		return err
 	}

@@ -20,9 +20,9 @@ func RegisterDiaryRoutes(g *echo.Group) {
 		g.Use(middlewares.AuthUser)
 		g.POST("/", createDiary)
 		g.GET("/", listDiaries)
-		g.PATCH("/:diary_id", updateDiary)
-		g.GET("/:diary_id", getDiary)
-		g.DELETE("/:diary_id", deleteDiary)
+		g.PATCH("/:diary_id/", updateDiary)
+		g.GET("/:diary_id/", getDiary)
+		g.DELETE("/:diary_id/", deleteDiary)
 	}(*g)
 }
 
@@ -50,6 +50,7 @@ func createDiary(ctx echo.Context) error {
 		ID:        utils.NewUUID(),
 		UserID:    userID,
 		Name:      pld.Name,
+		Type:      pld.Type,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}
@@ -118,10 +119,15 @@ func updateDiary(ctx echo.Context) error {
 		return resp.ServerJSON(ctx)
 	}
 
-	m.Name = pld.Name
+	if pld.Name != nil {
+		m.Name = *pld.Name
+	}
+	if pld.Type != nil {
+		m.Type = *pld.Type
+	}
 	m.UpdatedAt = time.Now().UTC()
 
-	if err := dr.CreateDiary(db, m); err != nil {
+	if err := dr.UpdateDiary(db, m); err != nil {
 		log.Log().Errorln(err)
 
 		msg, ok := errors.IsDuplicateKeyError(err)
@@ -185,21 +191,48 @@ func deleteDiary(ctx echo.Context) error {
 
 	resp := core.Response{}
 
-	db := app.DB()
+	db := app.DB().Begin()
 
 	dr := data.NewDiaryRepository()
-	err := dr.DeleteDiary(db, userID, diaryID)
 
+	err := dr.DeleteAllEntry(db, diaryID)
 	if err != nil {
+		db.Rollback()
 		log.Log().Errorln(err)
 
-		if errors.IsRecordNotFoundError(err) {
-			resp.Title = "Diary not found"
-			resp.Status = http.StatusNotFound
-			resp.Code = errors.DiaryNotFound
-			resp.Errors = err
-			return resp.ServerJSON(ctx)
-		}
+		resp.Title = "Database query failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+
+	err = dr.DeleteAllCategory(db, diaryID)
+	if err != nil {
+		db.Rollback()
+		log.Log().Errorln(err)
+
+		resp.Title = "Database query failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+
+	err = dr.DeleteDiary(db, userID, diaryID)
+	if err != nil {
+		db.Rollback()
+		log.Log().Errorln(err)
+
+		resp.Title = "Database query failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+
+	if err := db.Commit().Error; err != nil {
+		log.Log().Errorln(err)
 
 		resp.Title = "Database query failed"
 		resp.Status = http.StatusInternalServerError

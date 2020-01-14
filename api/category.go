@@ -32,7 +32,7 @@ func createCategory(ctx echo.Context) error {
 
 	resp := core.Response{}
 
-	pld, err := validators.ValidateCreateDiary(ctx)
+	pld, err := validators.ValidateCreateCategory(ctx)
 
 	if err != nil {
 		log.Log().Errorln(err)
@@ -104,7 +104,7 @@ func updateCategory(ctx echo.Context) error {
 
 	resp := core.Response{}
 
-	pld, err := validators.ValidateUpdateDiary(ctx)
+	pld, err := validators.ValidateUpdateCategory(ctx)
 
 	if err != nil {
 		log.Log().Errorln(err)

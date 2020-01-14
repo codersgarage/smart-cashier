@@ -15,15 +15,16 @@ type DiaryRepository interface {
 
 	CreateEntry(db *gorm.DB, e *models.Entry) error
 	ListEntries(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.EntryDetails, error)
-	//SearchEntries(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Entry, error)
-	//DeleteEntry(db *gorm.DB, userID, diaryID, entryID string) error
-	//GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.Entry, error)
-	//UpdateEntry(db *gorm.DB, e *models.Entry) error
-	//
+	DeleteEntry(db *gorm.DB, diaryID, entryID string) error
+	DeleteAllEntry(db *gorm.DB, diaryID string) error
+	GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.Entry, error)
+	UpdateEntry(db *gorm.DB, e *models.Entry) error
+
 	CreateCategory(db *gorm.DB, ec *models.Category) error
 	ListCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.Category, error)
 	SearchCategories(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Category, error)
-	DeleteCategory(db *gorm.DB, userID, diaryID, entryCategoryID string) error
-	GetCategory(db *gorm.DB, userID, diaryID, entryCategoryID string) (*models.Category, error)
+	DeleteCategory(db *gorm.DB, diaryID, CategoryID string) error
+	DeleteAllCategory(db *gorm.DB, diaryID string) error
+	GetCategory(db *gorm.DB, userID, diaryID, CategoryID string) (*models.Category, error)
 	UpdateCategory(db *gorm.DB, ec *models.Category) error
 }
