@@ -17,11 +17,11 @@ type DiaryRepository interface {
 	ListEntries(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.EntryDetails, error)
 	DeleteEntry(db *gorm.DB, diaryID, entryID string) error
 	DeleteAllEntry(db *gorm.DB, diaryID string) error
-	GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.Entry, error)
+	GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.EntryDetails, error)
 	UpdateEntry(db *gorm.DB, e *models.Entry) error
 
 	CreateCategory(db *gorm.DB, ec *models.Category) error
-	ListCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.Category, error)
+	ListCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.CategoryDetails, error)
 	SearchCategories(db *gorm.DB, query, userID, diaryID string, from, limit int) ([]models.Category, error)
 	DeleteCategory(db *gorm.DB, diaryID, CategoryID string) error
 	DeleteAllCategory(db *gorm.DB, diaryID string) error

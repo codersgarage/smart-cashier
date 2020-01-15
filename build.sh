@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CONSUL_URL="localhost:8500"
+export CONSUL_URL="128.199.89.247:8500"
 export CONSUL_PATH="smart-cashier"
 
 export GO111MODULE=on

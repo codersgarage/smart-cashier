@@ -17,6 +17,8 @@ type Entry struct {
 
 type EntryDetails struct {
 	ID           string    `json:"id"`
+	DiaryID      string    `json:"diary_id"`
+	DiaryName    string    `json:"diary_name"`
 	CategoryID   string    `json:"category_id"`
 	CategoryName string    `json:"category_name"`
 	Note         string    `json:"note"`

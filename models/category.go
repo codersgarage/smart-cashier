@@ -13,6 +13,12 @@ type Category struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`
 }
 
+type CategoryDetails struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Amount int    `json:"amount"`
+}
+
 func (ec *Category) TableName() string {
 	return "categories"
 }

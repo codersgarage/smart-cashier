@@ -128,14 +128,21 @@ func (dr *DiaryRepositoryImpl) DeleteAllEntry(db *gorm.DB, diaryID string) error
 	return nil
 }
 
-func (dr *DiaryRepositoryImpl) GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.Entry, error) {
+func (dr *DiaryRepositoryImpl) GetEntry(db *gorm.DB, userID, diaryID, entryID string) (*models.EntryDetails, error) {
+	entry := models.EntryDetails{}
 	e := models.Entry{}
-	if err := db.Table(e.TableName()).
-		Where("user_id = ? AND diary_id = ? AND id = ?", userID, diaryID, entryID).
-		Find(&e).Error; err != nil {
+	d := models.Diary{}
+	c := models.Category{}
+	if err := db.Table(fmt.Sprintf("%s AS e", e.TableName())).
+		Select("e.id AS id, e.amount AS amount, e.note AS note, e.created_at AS created_at, e.updated_at AS updated_at,"+
+			" d.id AS diary_id, d.name AS diary_name, d.user_id AS user_id, c.id AS category_id, c.name AS category_name").
+		Joins(fmt.Sprintf("LEFT JOIN %s AS d ON e.diary_id = d.id", d.TableName())).
+		Joins(fmt.Sprintf("LEFT JOIN %s AS c ON e.category_id = c.id", c.TableName())).
+		Where("d.user_id = ? AND e.diary_id = ? AND e.id = ?", userID, diaryID, entryID).
+		Find(&entry).Error; err != nil {
 		return nil, err
 	}
-	return &e, nil
+	return &entry, nil
 }
 
 func (dr *DiaryRepositoryImpl) UpdateEntry(db *gorm.DB, e *models.Entry) error {
@@ -151,15 +158,18 @@ func (dr *DiaryRepositoryImpl) CreateCategory(db *gorm.DB, c *models.Category) e
 	return db.Table(c.TableName()).Create(c).Error
 }
 
-func (dr *DiaryRepositoryImpl) ListCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.Category, error) {
-	var categories []models.Category
+func (dr *DiaryRepositoryImpl) ListCategories(db *gorm.DB, userID, diaryID string, from, limit int) ([]models.CategoryDetails, error) {
+	var categories []models.CategoryDetails
 	c := models.Category{}
 	d := models.Diary{}
+	e := models.Entry{}
 	if err := db.Table(fmt.Sprintf("%s AS c", c.TableName())).
-		Select("c.id AS id, d.id AS diary_id, d.user_id AS user_id, c.name AS name, c.created_at AS created_at, c.updated_at AS updated_at").
+		Select("c.id AS id, c.name AS name, SUM(e.amount) AS amount").
 		Joins(fmt.Sprintf("JOIN %s AS d ON c.diary_id = d.id", d.TableName())).
-		Where("user_id = ? AND diary_id = ?", userID, diaryID).
-		Order("created_at DESC").
+		Joins(fmt.Sprintf("LEFT JOIN %s AS e ON c.id = e.category_id", e.TableName())).
+		Group("c.id, c.name, c.created_at").
+		Where("d.user_id = ? AND c.diary_id = ?", userID, diaryID).
+		Order("c.created_at DESC").
 		Limit(limit).
 		Offset(from).
 		Find(&categories).Error; err != nil {

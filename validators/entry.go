@@ -9,7 +9,7 @@ import (
 type ReqCreateEntry struct {
 	CategoryID string  `json:"category_id" valid:"required,stringlength(1|100)"`
 	Note       string  `json:"note" valid:"required,stringlength(1|100)"`
-	Amount     float64 `json:"amount" valid:"required,range(1|1000000000)"`
+	Amount     float64 `json:"amount" valid:"required"`
 }
 
 func ValidateCreateEntry(ctx echo.Context) (*ReqCreateEntry, error) {
@@ -36,7 +36,7 @@ func ValidateCreateEntry(ctx echo.Context) (*ReqCreateEntry, error) {
 type ReqUpdateEntry struct {
 	CategoryID *string `json:"category_id"`
 	Note       *string `json:"note"`
-	Amount     float64 `json:"amount" valid:"required,range(1|1000000000)"`
+	Amount     float64 `json:"amount" valid:"required"`
 }
 
 func ValidateUpdateEntry(ctx echo.Context) (*ReqUpdateEntry, error) {
