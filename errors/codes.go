@@ -70,6 +70,7 @@ const (
 	ProductUnavailable                ErrorCode = "404013"
 	OrderNotFound                     ErrorCode = "404014"
 	DiaryNotFound                     ErrorCode = "404014"
+	EntryNotFound                     ErrorCode = "404014"
 	LoginCredentialsInvalid           ErrorCode = "401001"
 	VerificationTokenIsInvalid        ErrorCode = "401002"
 )

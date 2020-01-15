@@ -21,8 +21,8 @@ func RegisterEntryRoutes(g *echo.Group) {
 		g.POST("/", createEntry)
 		g.GET("/", listEntries)
 		//g.PATCH("/:entry_id", updateEntry)
-		//g.GET("/:entry_id", getEntry)
-		//g.DELETE("/:entry_id", deleteEntry)
+		g.GET("/:entry_id/", getEntry)
+		g.DELETE("/:entry_id/", deleteEntry)
 	}(*g)
 }
 
@@ -248,5 +248,83 @@ func listEntries(ctx echo.Context) error {
 
 	resp.Status = http.StatusOK
 	resp.Data = d
+	return resp.ServerJSON(ctx)
+}
+
+func getEntry(ctx echo.Context) error {
+	userID := ctx.Get(utils.UserID).(string)
+	diaryID := ctx.Param("diary_id")
+	entryID := ctx.Param("entry_id")
+
+	resp := core.Response{}
+
+	db := app.DB()
+
+	dr := data.NewDiaryRepository()
+	m, err := dr.GetEntry(db, userID, diaryID, entryID)
+	if err != nil {
+		log.Log().Errorln(err)
+
+		if errors.IsRecordNotFoundError(err) {
+			resp.Title = "Entry not found"
+			resp.Status = http.StatusNotFound
+			resp.Code = errors.EntryNotFound
+			resp.Errors = err
+			return resp.ServerJSON(ctx)
+		}
+
+		resp.Title = "Database query failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+
+	resp.Status = http.StatusOK
+	resp.Data = m
+	return resp.ServerJSON(ctx)
+}
+
+func deleteEntry(ctx echo.Context) error {
+	userID := ctx.Get(utils.UserID).(string)
+	diaryID := ctx.Param("diary_id")
+	entryID := ctx.Param("entry_id")
+
+	resp := core.Response{}
+
+	db := app.DB()
+
+	dr := data.NewDiaryRepository()
+	m, err := dr.GetEntry(db, userID, diaryID, entryID)
+	if err != nil {
+		log.Log().Errorln(err)
+
+		if errors.IsRecordNotFoundError(err) {
+			resp.Title = "Entry not found"
+			resp.Status = http.StatusNotFound
+			resp.Code = errors.EntryNotFound
+			resp.Errors = err
+			return resp.ServerJSON(ctx)
+		}
+
+		resp.Title = "Database query failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+
+	err = dr.DeleteEntry(db, m.DiaryID, m.ID)
+	if err != nil {
+		log.Log().Errorln(err)
+
+		resp.Title = "Database query failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+
+	resp.Status = http.StatusNoContent
 	return resp.ServerJSON(ctx)
 }
